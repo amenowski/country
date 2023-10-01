@@ -7,6 +7,7 @@ function CountryProvider({ children }) {
   const [region, setRegion] = useState("All");
 
   const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState({});
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -49,12 +50,28 @@ function CountryProvider({ children }) {
     getCountries();
   }, []);
 
+  async function getCountry(name) {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`https://restcountries.com/v3.1/name/${name}`);
+      const data = await res.json();
+
+      setCountry(data[0]);
+    } catch (err) {
+      console.error(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <CountryContext.Provider
       value={{
         onSetSearchQuery: setSearchQuery,
         onSetRegion: setRegion,
         countries: filteredCountires,
+        getCountry,
+        country,
         numberFormatter,
         isLoading,
         error,

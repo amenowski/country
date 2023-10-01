@@ -1,37 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import Header from "./Header";
 import { useCountry } from "../contexts/CountryProvider";
 
 function Country() {
-  const [country, setCountry] = useState({});
-  const [loading, setLoading] = useState(true);
-  const { numberFormatter } = useCountry();
+  const { numberFormatter, getCountry, country } = useCountry();
   const { name } = useParams();
 
-  useEffect(() => {
-    async function getCountry() {
-      try {
-        const res = await fetch(`https://restcountries.com/v3.1/name/${name}`);
-        const data = await res.json();
+  useEffect(
+    function () {
+      getCountry(name);
+    },
+    [name]
+  );
 
-        if (data && data[0]) {
-          setCountry(data[0]);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error(err.message);
-        setLoading(false);
-        // Handle the error here, e.g., set an error state
-      }
-    }
-    getCountry();
-  }, [name]);
+  const {
+    flags: { svg: flagsSvg } = {},
+    name: { common: commonName } = {},
+    population,
+    region,
+    capital,
+    tld,
+    currencies = {},
+    languages = {},
+    borders = [],
+  } = country || {};
 
-  // Conditional rendering while loading
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const formattedPopulation = numberFormatter.format(population) || "";
+  const currenciesKeys = Object.keys(currencies);
+  const languagesValues = Object.values(languages);
 
   return (
     <>
@@ -44,54 +41,44 @@ function Country() {
           <div className="grid grid-cols-2 gap-28 items-center">
             <img
               className="min-w-full"
-              src={country?.flags?.svg || ""}
-              alt={`Flags of ${country?.name?.common || ""}`}
+              src={flagsSvg}
+              alt={`Flags of ${commonName}`}
             />
             <div className="flex flex-col gap-7">
               <h2 className="text-4xl font-bold text-darkEl dark:text-lightEl">
-                {country?.name?.common || ""}
+                {commonName}
               </h2>
               <div className="grid grid-cols-2">
                 <div className="flex flex-col gap-3">
                   <h3 className="font-bold text-xl text-darkEl dark:text-lightEl">
                     Native Name:{" "}
-                    <span className="font-normal">
-                      {country?.name?.common || ""}
-                    </span>
+                    <span className="font-normal">{commonName}</span>
                   </h3>
                   <h3 className="font-bold text-xl text-darkEl dark:text-lightEl">
                     Population:{" "}
-                    <span className="font-normal">
-                      {numberFormatter.format(country?.population) || ""}
-                    </span>
+                    <span className="font-normal">{formattedPopulation}</span>
                   </h3>
                   <h3 className="font-bold text-xl text-darkEl dark:text-lightEl">
-                    Region:{" "}
-                    <span className="font-normal">{country?.region || ""}</span>
+                    Region: <span className="font-normal">{region}</span>
                   </h3>
                   <h3 className="font-bold text-xl text-darkEl dark:text-lightEl">
                     Capital:{" "}
                     <span className="font-normal text-darkEl dark:text-lightEl">
-                      {country?.capital || ""}
+                      {capital}
                     </span>
                   </h3>
                 </div>
                 <div className="flex flex-col gap-3">
                   <h3 className="font-bold text-xl text-darkEl dark:text-lightEl">
-                    Top Level Domain:{" "}
-                    <span className="font-normal">{country?.tld || ""}</span>
+                    Top Level Domain: <span className="font-normal">{tld}</span>
                   </h3>
                   <h3 className="font-bold text-xl text-darkEl dark:text-lightEl">
                     Currenncies:{" "}
-                    <span className="font-normal">
-                      {Object.keys(country.currencies) || ""}
-                    </span>
+                    <span className="font-normal">{currenciesKeys}</span>
                   </h3>
                   <h3 className="font-bold text-xl text-darkEl dark:text-lightEl">
                     Languages:{" "}
-                    <span className="font-normal">
-                      {Object.values(country.languages) || ""}
-                    </span>
+                    <span className="font-normal">{languagesValues}</span>
                   </h3>
                 </div>
               </div>
@@ -100,7 +87,7 @@ function Country() {
                   Borders:{" "}
                 </h3>
                 <ul className="flex gap-1 text-lg">
-                  {country.borders ? (
+                  {borders ? (
                     country.borders?.map((border) => {
                       return (
                         <li

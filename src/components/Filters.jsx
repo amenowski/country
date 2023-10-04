@@ -1,10 +1,10 @@
 import { useCountry } from "../contexts/CountryProvider";
 
 function Filters() {
-  const { region, onSetRegion } = useCountry();
+  const { region, dispatch } = useCountry();
 
   function handleSetRegion(e) {
-    onSetRegion(e.target.value);
+    dispatch({ type: "setRegion", payload: e.target.value });
   }
 
   return (

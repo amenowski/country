@@ -4,10 +4,10 @@ import { AiOutlineSearch } from "react-icons/ai";
 
 function SearchBar() {
   const { isDark } = useTheme();
-  const { searchQuery, onSetSearchQuery } = useCountry();
+  const { searchQuery, dispatch } = useCountry();
 
   function handleSetQuery(e) {
-    onSetSearchQuery(e.target.value);
+    dispatch({ type: "setQuery", payload: e.target.value });
   }
 
   return (

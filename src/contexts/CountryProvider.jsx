@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
 
 const CountryContext = createContext();
 
@@ -97,24 +103,24 @@ function CountryProvider({ children }) {
     getCountries();
   }, []);
 
-  async function getCountry(name) {
-    dispatch({ type: "loading" });
-    try {
-      const res = await fetch(`https://restcountries.com/v3.1/name/${name}`);
-      const data = await res.json();
+  // const getCountry = useCallback(async (name) => {
+  //   dispatch({ type: "loading" });
+  //   try {
+  //     const res = await fetch(`https://restcountries.com/v3.1/name/${name}`);
+  //     const data = await res.json();
 
-      dispatch({ type: "country/loaded", payload: data[0] });
-    } catch (err) {
-      dispatch({ type: "rejected", payload: err.message });
-    }
-  }
+  //     dispatch({ type: "country/loaded", payload: data[0] });
+  //   } catch (err) {
+  //     dispatch({ type: "rejected", payload: err.message });
+  //   }
+  // }, []);
 
   return (
     <CountryContext.Provider
       value={{
         countries: filteredCountires,
         dispatch,
-        getCountry,
+        // getCountry,
         country,
         numberFormatter,
         isLoading,

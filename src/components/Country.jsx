@@ -4,14 +4,27 @@ import Header from "./Header";
 import { useCountry } from "../contexts/CountryProvider";
 
 function Country() {
-  const { numberFormatter, getCountry, country } = useCountry();
+  const { numberFormatter, country, dispatch } = useCountry();
   const { name } = useParams();
 
   useEffect(
     function () {
+      const getCountry = async (name) => {
+        dispatch({ type: "loading" });
+        try {
+          const res = await fetch(
+            `https://restcountries.com/v3.1/name/${name}`
+          );
+          const data = await res.json();
+
+          dispatch({ type: "country/loaded", payload: data[0] });
+        } catch (err) {
+          dispatch({ type: "rejected", payload: err.message });
+        }
+      };
       getCountry(name);
     },
-    [name]
+    [name, dispatch]
   );
 
   const {
